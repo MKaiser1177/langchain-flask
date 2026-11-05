@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyber">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sparky AI • Interactive DocuBot Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="theme-cyber">
+  <canvas id="ambient-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-layout">
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-mascot-orb">
+          <span class="brand-spark">✨</span>
+          <span class="brand-emoji">⚡</span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">
+            <span class="gradient-text">Sparky</span>
+            <span class="brand-badge">DOCUBOT 2.0</span>
+          </div>
+          <p class="brand-sub">Hyper-interactive LangChain + Flask Assistant</p>
+        </div>
+      </div>
+
+      <div class="status-center">
+        <div class="status-pill" id="system-status-pill">
+          <span class="status-pulse-dot" id="status-dot"></span>
+          <span class="status-label" id="status-text">Awaiting PDF Document</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-btn sound-btn" id="sound-toggle-btn" title="Toggle Interactive Audio FX">
+          <span class="nav-icon" id="sound-icon">🔊</span>
+          <div class="audio-waves" id="audio-wave-bars">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+
+        <div class="theme-selector-wrapper">
+          <button class="nav-btn theme-btn" id="theme-cycle-btn" title="Cycle Visual Theme">
+            <span class="theme-swatch"></span>
+            <span class="nav-label" id="theme-name">Neon Cyber</span>
+          </button>
+        </div>
+
+        <button class="nav-btn party-btn" id="confetti-burst-btn" title="Trigger Confetti Party!">
+          <span class="nav-icon">🎉</span>
+          <span class="btn-ripple"></span>
+        </button>
+
+        <button class="nav-btn reset-btn" id="session-reset-btn" title="Clear Brain & Chat History">
+          <span class="nav-icon">🔄</span>
+          <span class="nav-label">Reset</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <aside class="sidebar-panel">
+        <div class="mascot-card" id="mascot-card">
+          <div class="mascot-header">
+            <div class="mascot-mood-tag" id="mascot-mood-tag">
+              <span class="mood-icon">🤖</span>
+              <span id="mascot-mood-text">Happy & Curious</span>
+            </div>
+            <div class="poke-counter-badge" id="poke-counter-badge" title="How many times you've tickled Sparky!">
+              <span>Pokes: </span><b id="poke-count">0</b>
+            </div>
+          </div>
+
+          <div class="mascot-avatar-container" id="mascot-clickable-area">
+            <div class="mascot-speech-bubble" id="mascot-bubble">
+              <p id="mascot-speech-text">Feed me a PDF document, and let's explore its secrets!</p>
+              <span class="bubble-arrow"></span>
+            </div>
+
+            <svg class="mascot-svg" id="sparky-svg" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--accent-glow)" />
+                  <stop offset="50%" stop-color="var(--accent-primary)" />
+                  <stop offset="100%" stop-color="var(--accent-secondary)" />
+                </linearGradient>
+                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0f172a" />
+                  <stop offset="100%" stop-color="#020617" />
+                </linearGradient>
+                <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="8" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <radialGradient id="antennaGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="100%" stop-color="#0284c7" />
+                </radialGradient>
+              </defs>
+
+              <ellipse class="mascot-shadow" cx="120" cy="225" rx="55" ry="10" fill="rgba(0,0,0,0.35)" />
+
+              <g class="mascot-floating-body" id="mascot-body-group">
+                <line x1="120" y1="55" x2="120" y2="25" stroke="var(--text-muted)" stroke-width="4" stroke-linecap="round" />
+                <circle class="antenna-bulb" cx="120" cy="20" r="12" fill="url(#antennaGlow)" filter="url(#neonGlow)" />
+                <circle class="antenna-spark" cx="120" cy="20" r="5" fill="#ffffff" />
+
+                <rect x="25" y="90" width="16" height="42" rx="8" fill="var(--accent-secondary)" />
+                <line x1="33" y1="100" x2="33" y2="122" stroke="#ffffff" stroke-width="3" stroke-linecap="round" class="ear-eq-1" />
+
+                <rect x="199" y="90" width="16" height="42" rx="8" fill="var(--accent-secondary)" />
+                <line x1="207" y1="100" x2="207" y2="122" stroke="#ffffff" stroke-width="3" stroke-linecap="round" class="ear-eq-2" />
+
+                <path d="M 33 100 A 87 87 0 0 1 207 100" stroke="var(--accent-primary)" stroke-width="6" fill="none" stroke-linecap="round" />
+
+                <rect x="38" y="55" width="164" height="135" rx="36" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+
+                <path d="M 55 65 Q 120 75 185 65" stroke="rgba(255,255,255,0.45)" stroke-width="4" stroke-linecap="round" fill="none" />
+
+                <rect class="mascot-screen" x="52" y="75" width="136" height="95" rx="24" fill="url(#screenGrad)" stroke="rgba(56, 189, 248, 0.4)" stroke-width="2" />
+
+                <g class="mascot-eye-group" id="left-eye-group">
+                  <ellipse class="mascot-eye-bg" cx="90" cy="115" rx="20" ry="22" fill="#0369a1" />
+                  <g class="mascot-pupil" id="left-pupil" transform="translate(0, 0)">
+                    <ellipse cx="90" cy="115" rx="14" ry="16" fill="#38bdf8" filter="url(#neonGlow)" />
+                    <circle cx="86" cy="110" r="5" fill="#ffffff" />
+                    <circle cx="94" cy="120" r="2.5" fill="#ffffff" />
+                  </g>
+                  <rect class="mascot-eyelid" id="left-eyelid" x="68" y="90" width="44" height="0" fill="url(#screenGrad)" rx="4" />
+                </g>
+
+                <g class="mascot-eye-group" id="right-eye-group">
+                  <ellipse class="mascot-eye-bg" cx="150" cy="115" rx="20" ry="22" fill="#0369a1" />
+                  <g class="mascot-pupil" id="right-pupil" transform="translate(0, 0)">
+                    <ellipse cx="150" cy="115" rx="14" ry="16" fill="#38bdf8" filter="url(#neonGlow)" />
+                    <circle cx="146" cy="110" r="5" fill="#ffffff" />
+                    <circle cx="154" cy="120" r="2.5" fill="#ffffff" />
+                  </g>
+                  <rect class="mascot-eyelid" id="right-eyelid" x="128" y="90" width="44" height="0" fill="url(#screenGrad)" rx="4" />
+                </g>
+
+                <ellipse cx="70" cy="138" rx="8" ry="4" fill="#f43f5e" opacity="0.6" />
+                <ellipse cx="170" cy="138" rx="8" ry="4" fill="#f43f5e" opacity="0.6" />
+
+                <g class="mascot-mouth-group" id="mascot-mouth">
+                  <path id="mouth-path" d="M 106 148 Q 120 160 134 148" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" filter="url(#neonGlow)" />
+                </g>
+
+                <g class="mascot-jets">
+                  <rect x="75" y="190" width="22" height="12" rx="6" fill="var(--accent-secondary)" />
+                  <rect x="143" y="190" width="22" height="12" rx="6" fill="var(--accent-secondary)" />
+                  <path class="jet-flame flame-1" d="M 80 202 Q 86 218 92 202 Z" fill="#38bdf8" opacity="0.85" />
+                  <path class="jet-flame flame-2" d="M 148 202 Q 154 218 160 202 Z" fill="#38bdf8" opacity="0.85" />
+                </g>
+              </g>
+            </svg>
+          </div>
+
+          <div class="mascot-footer">
+            <span class="mascot-tip">👆 Click Sparky to interact or tickle him!</span>
+          </div>
+        </div>
+
+        <div class="docu-vault-card">
+          <div class="card-section-title">
+            <span class="section-icon">📁</span>
+            <span>Document Vault</span>
+            <span class="vault-tag" id="vault-status-tag">Empty</span>
+          </div>
+
+          <div class="file-dropzone" id="file-dropzone">
+            <input type="file" id="file-input" accept=".pdf" class="hidden-file-input">
+
+            <div class="dropzone-idle-content" id="dropzone-idle">
+              <div class="dropzone-icon-ring">
+                <span class="dropzone-icon">📄</span>
+                <span class="ring-particle p1"></span>
+                <span class="ring-particle p2"></span>
+                <span class="ring-particle p3"></span>
+              </div>
+              <h4 class="dropzone-title">Drop your PDF here</h4>
+              <p class="dropzone-subtitle">or <span class="highlight-browse">browse files</span> from computer</p>
+              <div class="supported-badge">PDF format up to 50MB</div>
+            </div>
+
+            <div class="dropzone-scanner-content" id="dropzone-scanner" style="display: none;">
+              <div class="scanner-hologram">
+                <div class="hologram-sheet">
+                  <div class="sheet-line l1"></div>
+                  <div class="sheet-line l2"></div>
+                  <div class="sheet-line l3"></div>
+                  <div class="sheet-line l4"></div>
+                  <div class="laser-beam"></div>
+                </div>
+              </div>
+              <div class="scanner-info">
+                <div class="scanner-headline" id="scanner-status-text">Ingesting Document...</div>
+                <div class="scanner-progress-track">
+                  <div class="scanner-progress-bar" id="scanner-progress-fill"></div>
+                </div>
+                <div class="scanner-sub" id="scanner-subtext">Extracting textual knowledge chunks</div>
+              </div>
+            </div>
+
+            <div class="dropzone-ready-content" id="dropzone-ready" style="display: none;">
+              <div class="ready-file-preview">
+                <div class="ready-file-icon">📑</div>
+                <div class="ready-file-meta">
+                  <div class="ready-file-name" id="ready-filename">document.pdf</div>
+                  <div class="ready-file-stats">
+                    <span class="ready-badge-chip">Indexed in Chroma</span>
+                    <span id="ready-file-size">Active</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ready-actions">
+                <button class="action-pill-btn change-doc-btn" id="change-doc-btn">
+                  <span>Replace PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-prompts-card">
+          <div class="card-section-title">
+            <span class="section-icon">💡</span>
+            <span>Instant Question Sparks</span>
+          </div>
+          <div class="prompts-grid" id="prompts-container">
+            <button class="prompt-chip" data-prompt="Summarize this entire document in 3 concise bullet points.">
+              <span class="chip-emoji">📝</span>
+              <span class="chip-label">3-Bullet Summary</span>
+            </button>
+            <button class="prompt-chip" data-prompt="What are the key findings, conclusions, and core insights?">
+              <span class="chip-emoji">🔍</span>
+              <span class="chip-label">Core Insights</span>
+            </button>
+            <button class="prompt-chip" data-prompt="Explain the central concept of this document like I am 5 years old.">
+              <span class="chip-emoji">🧸</span>
+              <span class="chip-label">Explain Like I'm 5</span>
+            </button>
+            <button class="prompt-chip" data-prompt="Generate 3 challenging quiz questions based strictly on this document.">
+              <span class="chip-emoji">🎯</span>
+              <span class="chip-label">Quiz Me!</span>
+            </button>
+            <button class="prompt-chip" data-prompt="What are the potential risks, caveats, or unanswered questions mentioned?">
+              <span class="chip-emoji">⚠️</span>
+              <span class="chip-label">Risks & Caveats</span>
+            </button>
+            <button class="prompt-chip" data-prompt="List all actionable recommendations or next steps found in the text.">
+              <span class="chip-emoji">🚀</span>
+              <span class="chip-label">Action Items</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="fidget-bar">
+          <button class="fidget-btn" id="fidget-dice-btn" title="Roll a creative prompt!">
+            <span>🎲 Random Spark</span>
+          </button>
+          <button class="fidget-btn" id="fidget-bubble-btn" title="Pop bubble sound effect">
+            <span>🫧 Pop Fidget</span>
+          </button>
+        </div>
+      </aside>
+
+      <section class="chat-panel">
+        <div class="chat-header-bar">
+          <div class="chat-bot-identity">
+            <div class="mini-bot-avatar">
+              <span>🤖</span>
+              <span class="avatar-live-dot" id="chat-header-dot"></span>
+            </div>
+            <div class="chat-identity-text">
+              <span class="chat-identity-title">Chat Session</span>
+              <span class="chat-doc-indicator" id="current-doc-pill">No PDF Attached</span>
+            </div>
+          </div>
+
+          <div class="chat-metrics">
+            <div class="metric-pill">
+              <span class="metric-icon">💬</span>
+              <span class="metric-val" id="metric-msg-count">0</span>
+              <span class="metric-lbl">msgs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="messages-viewport" id="messages-viewport">
+          <div class="welcome-hero" id="welcome-hero">
+            <div class="welcome-mascot-badge">
+              <div class="welcome-orb">⚡</div>
+              <h2>Hi! I'm Sparky, Your PDF Assistant!</h2>
+              <p>I read through dense documents and explain them with playful clarity. Let's make learning and researching interactive & fun!</p>
+            </div>
+
+            <div class="steps-cards-row">
+              <div class="step-card" id="step-upload-card">
+                <div class="step-num">1</div>
+                <div class="step-icon">📤</div>
+                <h4>Upload Document</h4>
+                <p>Drag any PDF into the vault on the left.</p>
+              </div>
+
+              <div class="step-card">
+                <div class="step-num">2</div>
+                <div class="step-icon">⚡</div>
+                <h4>Quantum Indexing</h4>
+                <p>Embeddings are split & vectorized into Chroma DB.</p>
+              </div>
+
+              <div class="step-card">
+                <div class="step-num">3</div>
+                <div class="step-icon">💬</div>
+                <h4>Ask Anything</h4>
+                <p>Ask deep questions, get verified context & summaries.</p>
+              </div>
+            </div>
+
+            <div class="hero-callout">
+              <span class="callout-sparkle">✨</span>
+              <span>Need an idea? Click any suggestion chip on the left or drop a PDF now!</span>
+            </div>
+          </div>
+
+          <div class="messages-list" id="messages-list"></div>
+
+          <div class="typing-indicator-row" id="typing-indicator" style="display: none;">
+            <div class="typing-avatar">🤖</div>
+            <div class="typing-bubble">
+              <div class="typing-text-meta" id="typing-label">Sparky is thinking...</div>
+              <div class="wave-dots">
+                <span class="dot d1"></span>
+                <span class="dot d2"></span>
+                <span class="dot d3"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="messages-bottom-anchor"></div>
+        </div>
+
+        <div class="chat-dock-wrapper">
+          <div class="chat-input-bar" id="chat-input-dock">
+            <button class="dock-action-btn attach-btn" id="dock-attach-btn" title="Upload PDF Document">
+              <span class="btn-icon">📎</span>
+            </button>
+
+            <button class="dock-action-btn voice-btn" id="voice-input-btn" title="Dictate with your microphone">
+              <span class="btn-icon">🎤</span>
+              <span class="mic-wave"></span>
+            </button>
+
+            <div class="input-field-wrapper">
+              <textarea 
+                id="message-input" 
+                rows="1" 
+                placeholder="Ask Sparky anything about the uploaded PDF..." 
+                autocomplete="off"
+                spellcheck="true"
+              ></textarea>
+            </div>
+
+            <button class="dock-action-btn send-btn" id="send-button" title="Send Question (Enter)">
+              <span class="send-label">Send</span>
+              <span class="send-icon">🚀</span>
+            </button>
+          </div>
+
+          <div class="dock-footer-hints">
+            <span class="hint-item"><kbd>Enter</kbd> to send</span>
+            <span class="hint-dot">•</span>
+            <span class="hint-item"><kbd>Shift + Enter</kbd> for newline</span>
+            <span class="hint-dot">•</span>
+            <span class="hint-item">Powered by LangChain & HuggingFace</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-stack" id="toast-stack"></div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
