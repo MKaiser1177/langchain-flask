@@ -1,6 +1,6 @@
 # Sparky AI — DocuBot
 
-Sparky is a Flask web app that lets you upload a PDF and ask questions about its contents. It uses LangChain for retrieval-augmented question answering, Hugging Face for the language model and embeddings, and a playful browser-based chat interface.
+Sparky is a LangChain and Flask web app that lets you upload a PDF and ask questions about its contents. It uses LangChain for retrieval-augmented question answering, Hugging Face for the language model and embeddings, and a playful browser-based chat interface.
 
 ## Features
 
